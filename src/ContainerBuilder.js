@@ -3,10 +3,11 @@ import { Componet } from "./Component.js"
 export class ContainerBuilder {
     constructor() {
         this.componets = []
+        this.factories = []
     }
 
-    register(key, value) {
-        const component = new Componet(value, this)
+    register(key, value, functionName = undefined) {
+        const component = new Componet(value, functionName, this)
         this.addComponent(key, component)
         return component
     }
@@ -19,6 +20,10 @@ export class ContainerBuilder {
         const result = this.componets.find(item => item.key === key)
         if (result === undefined) return
         return this.componets.find(item => item.key === key).component
+    }
+
+    findComponentOrFactory(key) {
+
     }
 
     get(key) {

@@ -1,3 +1,4 @@
+import { ArgumentTypeNotExistsError } from './errors.js'
 
 export class Argument {
     static Type = {
@@ -43,7 +44,7 @@ export class Argument {
                 break;
 
             default:
-                throw new Error('')
+                throw new ArgumentTypeNotExistsError()
         }
     }
 

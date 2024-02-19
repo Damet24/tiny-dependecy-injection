@@ -24,6 +24,16 @@ class ImageManage {
     }
 }
 
+export class NewsletterManager {}
+
+export class NewsletterManagerFactory {
+    static createNewsletterManager(test) {
+        console.log(test)
+        let newsletterManager = new NewsletterManager()
+        return newsletterManager
+    }
+}
+
 const container = new ContainerBuilder()
 container.register('service2', Service2)
 
@@ -34,11 +44,10 @@ container.register('service1', Service1)
     .addArgument('$env(OS)')
     .asSingleton()
 
-container.register('img-manage', context => {
-    const img = context.resolve('@service2')
-    return new ImageManage(img)
-})
+container.register('factory', NewsletterManagerFactory, 'createNewsletterManager')
+    .addArgument('tu puta madre')
 
 const service1 = container.get('service1')
-// console.log(process.env)
+const service2 = container.get('factory')
+console.log(service2)
 service1.test()

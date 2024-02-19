@@ -1,12 +1,14 @@
 import { InyectionType } from './InyectionType.js'
 import { Argument } from './Argument.js'
+import {EnvironmentVaribaleNotExistsError, ParseEnvironmentVaribaleError} from './errors.js'
 
 export class Componet {
     static staticInstance = null
 
-    constructor(object, context) {
+    constructor(object, functionName = undefined, context) {
         this.arguments = []
         this.prototype = object
+        this.functionName = functionName
         this.context = context
         this.inyectionType = InyectionType.Scoped
     }
@@ -29,6 +31,9 @@ export class Componet {
 
     getInstance() {
         let instance = null
+        if(this.functionName != undefined) {
+            return this.getFactoryFcuntion()
+        }
         switch (this.inyectionType) {
             case InyectionType.Scoped:
                 instance = this.getScopedInstance()
@@ -41,9 +46,18 @@ export class Componet {
         return instance
     }
 
+    getFactoryFcuntion () {
+        let obj = null
+        const args = this.resolveArgs()
+        if (args === undefined) this.prototype[this.functionName]()
+        else obj = this.prototype[this.functionName](...args)
+        return obj
+    }
+
     getScopedInstance() {
         let instance = null
         const args = this.resolveArgs()
+        console.log(this)
         if (args === undefined) instance = new this.prototype()
         else instance = new this.prototype(...args)
         return instance
@@ -97,9 +111,9 @@ export class Componet {
         if (resultado) {
             const envVar = process.env[resultado[1]]
             if(envVar) return envVar;
-            throw Error('')
+            throw new EnvironmentVaribaleNotExistsError(resultado[1])
         } else {
-            throw Error('')
+            throw new ParseEnvironmentVaribaleError(resultado[1])
         }
     }
 }
