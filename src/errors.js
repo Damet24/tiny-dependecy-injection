@@ -1,7 +1,7 @@
 
 export class ArgumentTypeNotExistsError extends Error {
     constructor(message) {
-        super(message)
+        super(message ?? 'ArgumentTypeNotExistsError')
         this.name = 'ArgumentTypeNotExistsError'
     }
 }
@@ -22,3 +22,16 @@ export class ParseEnvironmentVaribaleError extends Error {
     }
 }
 
+export class ComponetIsNotRegisterError extends Error {
+    constructor(message = 'ComponetIsNotRegisterError') {
+        super(message)
+        this.name = 'ComponetIsNotRegisterError'
+    }
+}
+
+export class ArgumentNullError extends Error {
+    constructor(message = 'ArgumentNullError') {
+        super(message)
+        this.name = 'ArgumentNullError'
+    }
+}
