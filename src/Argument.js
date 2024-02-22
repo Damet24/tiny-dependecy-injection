@@ -1,4 +1,4 @@
-import { ArgumentTypeNotExistsError } from './errors.js'
+import { ArgumentTypeNotExistsError, EnvironmentVaribaleNotExistsError, ParseEnvironmentVaribaleError } from './errors.js'
 
 export class Argument {
     static Type = {
@@ -10,21 +10,21 @@ export class Argument {
         EnvVar: 'EnvVar'
     }
 
-    constructor(value) {
+    constructor(value, context) {
         this.value = value
         this.type = ''
+        this.context = context
         this.checkArgumentType(value)
     }
 
-    getArgumentStringType(arg) {
-        if (this.isService(arg)) return Argument.Type.Service
-        else if (this.isEnvVar(arg)) return Argument.Type.EnvVar
+    getArgumentStringType() {
+        if (this.isService()) return Argument.Type.Service
+        else if (this.isEnvVar()) return Argument.Type.EnvVar
         else return Argument.Type.String
     }
 
     checkArgumentType(arg) {
         const type = typeof arg
-
         switch (type) {
             case 'string':
                 const type = this.getArgumentStringType(arg)
@@ -36,7 +36,7 @@ export class Argument {
                 break;
 
             case 'object':
-                this.type = Argument.Type.object
+                this.type = Argument.Type.Object
                 break;
 
             case 'function':
@@ -48,11 +48,44 @@ export class Argument {
         }
     }
 
-    isService(arg) {
-        return arg.startsWith('@')
+    isService() {
+        return this.value.startsWith('@')
     }
 
-    isEnvVar(arg) {
-        return arg.startsWith('$env(')
+    isEnvVar() {
+        return this.value.startsWith('$env(')
+    }
+
+    resolveArgByType() {
+        let resolvedArg = null
+        switch (this.type) {
+            case Argument.Type.Service:
+                resolvedArg = this.resolveService()
+                break;
+
+            case Argument.Type.EnvVar:
+                resolvedArg = this.resolveEnvVar()
+                break;
+        
+            default:
+                resolvedArg = this.value
+                break;
+        }
+        return resolvedArg
+    }
+
+    resolveService() {
+        return this.context.get(this.value.slice(1).trim())
+    }
+
+    resolveEnvVar() {
+        var resultado = this.value.match(/\$env\((.*?)\)/)
+        if (resultado) {
+            const envVar = process.env[resultado[1]]
+            if(envVar) return envVar;
+            throw new EnvironmentVaribaleNotExistsError(resultado[1])
+        } else {
+            throw new ParseEnvironmentVaribaleError(resultado[1])
+        }
     }
 }
