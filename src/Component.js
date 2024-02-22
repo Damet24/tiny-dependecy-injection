@@ -1,11 +1,13 @@
 import { InyectionType } from './InyectionType.js'
 import { Argument } from './Argument.js'
-import {EnvironmentVaribaleNotExistsError, ParseEnvironmentVaribaleError} from './errors.js'
+import { ArgumentNullError} from './errors.js'
 
 export class Componet {
     static staticInstance = null
 
     constructor(object, functionName = undefined, context) {
+        if (object === undefined) throw new ArgumentNullError('object cannot be null')
+        if (context === undefined) throw new ArgumentNullError('context cannot be null')
         this.arguments = []
         this.prototype = object
         this.functionName = functionName
@@ -14,7 +16,7 @@ export class Componet {
     }
 
     addArgument(argument) {
-        const arg = new Argument(argument)
+        const arg = new Argument(argument, this.context)
         this.arguments.push(arg)
         return this
     }
@@ -30,23 +32,29 @@ export class Componet {
     }
 
     getInstance() {
+        if(this.#isFactory()) return this.#getFactoryFcuntion()
+        else return this.#getServiceInstace()
+    }
+
+    #getServiceInstace() {
         let instance = null
-        if(this.functionName != undefined) {
-            return this.getFactoryFcuntion()
-        }
         switch (this.inyectionType) {
             case InyectionType.Scoped:
-                instance = this.getScopedInstance()
+                instance = this.#getScopedInstance()
                 break
 
             case InyectionType.Singleton:
-                instance = this.getSingletonInstance()
+                instance = this.#getSingletonInstance()
                 break
         }
         return instance
     }
 
-    getFactoryFcuntion () {
+    #isFactory() {
+        return this.functionName != undefined
+    }
+
+    #getFactoryFcuntion () {
         let obj = null
         const args = this.resolveArgs()
         if (args === undefined) this.prototype[this.functionName]()
@@ -54,16 +62,15 @@ export class Componet {
         return obj
     }
 
-    getScopedInstance() {
+    #getScopedInstance() {
         let instance = null
         const args = this.resolveArgs()
-        console.log(this)
         if (args === undefined) instance = new this.prototype()
         else instance = new this.prototype(...args)
         return instance
     }
 
-    getSingletonInstance() { 
+    #getSingletonInstance() { 
         if (Componet.staticInstance === null) {
             const args = this.resolveArgs()
             if (args === undefined) {
@@ -75,45 +82,16 @@ export class Componet {
             return Componet.staticInstance
         }
         return Componet.staticInstance
-    } 
+    }
 
+    /**
+     * Resolve all arguments of component
+     * @returns {any[]|undefined}
+     */
     resolveArgs() {
-        if (this.arguments === undefined || this.arguments.length === 0) return
+        if (this.arguments === undefined || this.arguments.length === 0) return undefined
         return this.arguments.map(arg => {
-            return this.resolveArgByType(arg)
+            return arg.resolveArgByType()
         })
-    }
-    
-    resolveArgByType(arg) {
-        let resolvedArg = null
-        switch (arg.type) {
-            case Argument.Type.Service:
-                resolvedArg = this.resolveService(arg)
-                break;
-
-            case Argument.Type.EnvVar:
-                resolvedArg = this.resolveEnvVar(arg)
-                break;
-        
-            default:
-                resolvedArg = arg.value
-                break;
-        }
-        return resolvedArg
-    }
-
-    resolveService(arg) {
-        return this.context.get(arg.value.slice(1).trim())
-    }
-
-    resolveEnvVar(arg) {
-        var resultado = arg.value.match(/\$env\((.*?)\)/)
-        if (resultado) {
-            const envVar = process.env[resultado[1]]
-            if(envVar) return envVar;
-            throw new EnvironmentVaribaleNotExistsError(resultado[1])
-        } else {
-            throw new ParseEnvironmentVaribaleError(resultado[1])
-        }
     }
 }
