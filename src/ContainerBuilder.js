@@ -1,4 +1,5 @@
 import { Componet } from "./Component.js"
+import { ComponetIsNotRegisterError } from './errors.js'
 
 export class ContainerBuilder {
     constructor() {
@@ -18,12 +19,8 @@ export class ContainerBuilder {
 
     findComponent(key) {
         const result = this.componets.find(item => item.key === key)
-        if (result === undefined) return
+        if (result === undefined) throw new ComponetIsNotRegisterError('ComponetIsNotRegisterError')
         return this.componets.find(item => item.key === key).component
-    }
-
-    findComponentOrFactory(key) {
-
     }
 
     get(key) {
