@@ -1,14 +1,18 @@
 {
-  "name": "simple-dependecy-injection",
+  "name": "tiny-dependecy-injection",
   "version": "1.0.0",
-  "description": "",
+  "description": "a simple library for dependency injection in node",
+  "main": "lib/index.js",
   "type": "module",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Damet24/simple-dependecy-injection.git"
+  },
   "scripts": {
     "test": "vitest"
   },
   "keywords": [],
-  "author": "",
+  "author": "Daniel Mercado <daniel.mercado.dev@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "vitest": "^1.3.0"
