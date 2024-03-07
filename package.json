@@ -11,7 +11,7 @@
   "scripts": {
     "test": "vitest"
   },
-  "keywords": [],
+  "keywords": ["node", "dependency", "injection", "service", "container", "console", "inversion-of-control"],
   "author": "Daniel Mercado <daniel.mercado.dev@gmail.com>",
   "license": "ISC",
   "devDependencies": {
