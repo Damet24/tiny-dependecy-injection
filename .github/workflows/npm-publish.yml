@@ -18,6 +18,8 @@ jobs:
           node-version: 16
       - run: npm ci
       - run: npm test
+        env:
+            OS: example_os
 
   publish-npm:
     needs: build
