@@ -1,7 +1,7 @@
-import { expect, test, describe, beforeEach } from 'vitest'
-import { Componet } from '../../src/Component.js'
-import { ContainerBuilder } from '../../src/ContainerBuilder.js'
-import { Argument } from '../../src/Argument.js'
+import {describe, expect, test} from 'vitest'
+import {Componet} from '../../lib/Component.js'
+import {ContainerBuilder} from '../../lib/index.js'
+import {Argument} from '../../lib/Argument.js'
 
 class TestService {
     constructor(arg1, arg2) {
@@ -10,10 +10,9 @@ class TestService {
     }
 }
 
-class CeateTestFactory {
+class CreateTestFactory {
     static CreateService(arg1) {
-        const instance = new TestService(arg1, 'arg2')
-        return instance
+        return new TestService(arg1, 'arg2')
     }
 }
 
@@ -49,7 +48,7 @@ describe('Component', () => {
         })
 
         test('create service from factory', () => {
-            const component = new Componet(CeateTestFactory, 'CreateService', container)
+            const component = new Componet(CreateTestFactory, 'CreateService', container)
             const arg1 = 'test'
             component.addArgument(arg1)
             expect(component.arguments.length).toBe(1)

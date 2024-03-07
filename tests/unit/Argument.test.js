@@ -1,12 +1,12 @@
-import { expect, test, describe, beforeEach } from 'vitest'
-import { Argument } from '../../src/Argument.js'
-import { ContainerBuilder } from '../../src/ContainerBuilder.js'
+import { expect, test, describe } from 'vitest'
+import { Argument } from '../../lib/Argument.js'
+import { ContainerBuilder } from '../../lib/index.js'
 
 class TestService1 { }
 
 describe('Arguments', () => {
     describe('creating arguments', () => {
-        test('create an argument widthout value', () => {
+        test('create an argument without value', () => {
             expect(() => new Argument()).toThrowError(/ArgumentTypeNotExistsError/)
         })
 
@@ -94,28 +94,28 @@ describe('Arguments', () => {
                     const argValue = '$env(NOT_EXISTS)'
                     const arg = new Argument(argValue)
                     expect(arg.type).toBe(Argument.Type.EnvVar)
-                    expect(() => arg.resolveArgByType()).toThrowError(/EnvironmentVaribaleNotExistsError/)
+                    expect(() => arg.resolveArgByType()).toThrowError(/the environment variable with the name 'NOT_EXISTS' does not exist/)
                 })
 
                 test('resolve type of var env that is misspelled', () => {
                     const argValue = '$env(NOT_EXISTS'
                     const arg = new Argument(argValue)
                     expect(arg.type).toBe(Argument.Type.EnvVar)
-                    expect(() => arg.resolveArgByType()).toThrowError(/ParseEnvironmentVaribaleError/)
+                    expect(() => arg.resolveArgByType()).toThrowError(/error when trying to parse an environment variable: undefined/)
                 })
 
                 test('resolve type of var env that is misspelled', () => {
                     const argValue = '$env(NOT_ EXISTS'
                     const arg = new Argument(argValue)
                     expect(arg.type).toBe(Argument.Type.EnvVar)
-                    expect(() => arg.resolveArgByType()).toThrowError(/ParseEnvironmentVaribaleError/)
+                    expect(() => arg.resolveArgByType()).toThrowError(/error when trying to parse an environment variable: undefined/)
                 })
             })
 
             const container = new ContainerBuilder()
             container.register('service', TestService1)
 
-            describe('sevice type', () => {
+            describe('service type', () => {
                 test('resolve service type', () => {
                     const argValue = '@service'
                     const arg = new Argument(argValue, container)
