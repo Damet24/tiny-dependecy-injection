@@ -1,6 +1,6 @@
 {
   "name": "tiny-dependecy-injection",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a simple library for dependency injection in node",
   "main": "lib/index.js",
   "type": "module",
