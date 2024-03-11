@@ -39,7 +39,7 @@ container
 ```
 And get services from your container
 ```js
-const reporitory = container.get('@reporitories.ures-repository')
+const reporitory = container.get('reporitories.ures-repository')
 ```
 You can also configure the scope of the service, by default it is scoped
 ```js
